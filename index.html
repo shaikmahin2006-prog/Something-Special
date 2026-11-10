@@ -1,0 +1,515 @@
+from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+HTML = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Happy Birthday Hannuu! 💗</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Trebuchet MS', sans-serif;
+    background: linear-gradient(135deg, #ffe0ed, #e8d9ff, #ffd6e7);
+    color: #713d70;
+    text-align: center;
+    overflow-x: hidden;
+}
+
+section {
+    padding: 65px 20px;
+}
+
+.hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    color: #d63384;
+    animation: fadeIn 2s;
+}
+
+h2 {
+    color: #bd4c91;
+    margin-bottom: 20px;
+}
+
+p {
+    line-height: 1.8;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    margin: 20px;
+}
+
+button {
+    background: linear-gradient(45deg, #ff69a6, #b66cff);
+    color: white;
+    border: none;
+    padding: 14px 25px;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 12px;
+    transition: 0.3s;
+    box-shadow: 0 5px 15px #d98ab577;
+}
+
+button:hover {
+    transform: scale(1.08);
+}
+
+.card {
+    background: #ffffffc9;
+    padding: 30px;
+    border-radius: 25px;
+    max-width: 650px;
+    margin: 25px auto;
+    box-shadow: 0 8px 30px #b66cff30;
+}
+
+.hidden {
+    display: none;
+}
+
+.cake {
+    font-size: 100px;
+    animation: bounce 2s infinite;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 15px;
+    max-width: 700px;
+    margin: auto;
+}
+
+.photo {
+    background: white;
+    padding: 10px;
+    border-radius: 18px;
+    box-shadow: 0 5px 15px #00000015;
+}
+
+.photo img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.photo p {
+    padding: 8px;
+}
+
+.gift {
+    font-size: 100px;
+    cursor: pointer;
+    transition: 0.4s;
+}
+
+.gift:hover {
+    transform: rotate(15deg) scale(1.15);
+}
+
+.heart {
+    position: fixed;
+    bottom: -30px;
+    font-size: 22px;
+    pointer-events: none;
+    animation: floatUp 7s linear infinite;
+    z-index: -1;
+}
+
+footer {
+    padding: 30px;
+    background: #ffffff70;
+}
+
+#confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes floatUp {
+    to {
+        transform: translateY(-110vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@media(max-width: 600px) {
+    section { padding: 45px 15px; }
+    .card { padding: 22px; }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="confetti"></canvas>
+
+<!-- HERO SECTION -->
+<section class="hero">
+
+    <div style="font-size:55px">🎀 💗 🎀</div>
+
+    <h1>Happy Birthday!</h1>
+
+    <h1 style="font-size:2.5rem">
+        My Special Person ✨
+    </h1>
+
+    <p class="subtitle">
+        Today is all about YOU! 🌸
+        <br>
+        A little website for someone very special.
+    </p>
+
+    <button onclick="celebrate()">
+        Open Your Birthday Surprise 🎁
+    </button>
+
+    <p style="margin-top:25px">
+        Scroll down for more surprises ↓
+    </p>
+
+</section>
+
+<!-- BIRTHDAY CAKE -->
+<section>
+    <h2>Make a Birthday Wish! 🎂</h2>
+
+    <div class="card">
+        <div class="cake">🎂</div>
+
+        <p>
+            Another year of beautiful memories,
+            laughter and happiness!
+        </p>
+
+        <button onclick="celebrate()">
+            Celebrate! 🎉
+        </button>
+    </div>
+</section>
+
+<!-- LETTER -->
+<section>
+    <h2>A Little Letter For You 💌</h2>
+
+    <div class="card">
+
+        <p>
+            Some people make ordinary days extraordinary.
+            You are one of those people.
+        </p>
+
+        <br>
+
+        <button onclick="revealLetter()">
+            Open Your Letter 💗
+        </button>
+
+        <div id="letter" class="hidden">
+
+            <h2 style="margin-top:25px">
+                Dear Hanna 🌷
+            </h2>
+
+            <p>
+                Happy Birthday to one of the most
+                wonderful people in my life!
+
+                <br><br>
+
+                Thank you for all the laughs, silly
+                conversations, unforgettable memories
+                and the little moments that mean so much.
+
+                <br><br>
+
+                I hope your life is filled with endless
+                happiness, success, love and beautiful
+                opportunities.
+
+                <br><br>
+
+                Never stop being the amazing person
+                you are.
+
+                <br><br>
+
+                You deserve all the happiness in
+                the universe!
+
+                <br><br>
+
+                Best wishes for your NEET Journey.💖
+
+                <br><br>
+
+                <b>Forever your  greatest fan. I'm rooting for your success 🫶</b>
+            </p>
+
+        </div>
+    </div>
+</section>
+
+<!-- PHOTO GALLERY -->
+<section>
+    <h2>Our Little Memory Lane 📸</h2>
+
+    <p>Some memories deserve to stay forever.</p>
+
+    <div class="gallery">
+
+        <div class="photo">
+            <img src="https://placehold.co/300x300/ffd6e7/9b4779?text=Memory+1"
+                 alt="Memory 1">
+            <p>Our Memories 💕</p>
+        </div>
+
+        <div class="photo">
+            <img src="https://placehold.co/300x300/e8d9ff/774b9b?text=Memory+2"
+                 alt="Memory 2">
+            <p>Crazy Moments 😂</p>
+        </div>
+
+        <div class="photo">
+            <img src="https://placehold.co/300x300/ffe6c7/9b4779?text=Memory+3"
+                 alt="Memory 3">
+            <p>Best Days 🌸</p>
+        </div>
+
+    </div>
+
+    <p style="margin-top:20px">
+        Replace these sample images with your own pictures!
+    </p>
+</section>
+
+<!-- GIFT -->
+<section>
+    <h2>A Special Gift For You 🎁</h2>
+
+    <div class="card">
+
+        <div class="gift" onclick="openGift()">
+            🎁
+        </div>
+
+        <p>Tap the gift to discover your surprise!</p>
+
+        <div id="giftMessage" class="hidden">
+            <h2>You're a Gift Yourself! 💝</h2>
+
+            <p>
+                The world is brighter with you in it.
+                Keep shining, keep smiling and keep
+                being wonderfully YOU! ✨
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<!-- FRIENDSHIP QUIZ -->
+<section>
+    <h2>A Little Friendship Quiz 😋</h2>
+
+    <div class="card">
+
+        <p><b>Who is more likely to laugh at a silly joke?</b></p>
+
+        <button onclick="quiz('You! 😂')">You</button>
+        <button onclick="quiz('Obviously me! 😎')">Me</button>
+
+        <h3 id="quizResult" style="margin-top:20px"></h3>
+
+    </div>
+</section>
+
+<!-- FINAL MESSAGE -->
+<section>
+    <div class="card">
+
+        <h1 style="font-size:2.5rem">
+            Happy Birthday! 💗
+        </h1>
+
+        <p style="margin:20px 0">
+            May your smile never fade,
+            your dreams come true,
+            and your happiness never end.
+        </p>
+
+        <button onclick="celebrate()">
+            One Last Celebration! 🎊
+        </button>
+
+    </div>
+</section>
+
+<footer>
+    Made with 💗, happiness and lots of love.
+
+    <br><br>
+
+    A special birthday website just for you! 🌷
+</footer>
+
+<script>
+
+// CONFETTI ANIMATION
+
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+
+let particles = [];
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+function celebrate() {
+
+    for (let i = 0; i < 180; i++) {
+
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: -20,
+            size: Math.random() * 8 + 4,
+            speed: Math.random() * 5 + 2,
+            color: ["#ff69a6", "#b66cff",
+                    "#ffd700", "#ff9fbc",
+                    "#ffffff"][Math.floor(Math.random()*5)]
+        });
+    }
+}
+
+function drawConfetti() {
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach((p, i) => {
+
+        p.y += p.speed;
+        p.x += Math.sin(p.y / 30) * 2;
+
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+
+        if (p.y > canvas.height) {
+            particles.splice(i, 1);
+        }
+
+    });
+
+    requestAnimationFrame(drawConfetti);
+}
+
+drawConfetti();
+
+// LETTER REVEAL
+
+function revealLetter() {
+
+    document.getElementById("letter")
+        .classList.toggle("hidden");
+
+    celebrate();
+}
+
+// GIFT REVEAL
+
+function openGift() {
+
+    document.getElementById("giftMessage")
+        .classList.remove("hidden");
+
+    celebrate();
+
+}
+
+// FRIENDSHIP QUIZ
+
+function quiz(answer) {
+
+    document.getElementById("quizResult")
+        .innerHTML = answer + "<br>That's why we're the best! 💗";
+
+    celebrate();
+
+}
+
+// FLOATING HEARTS
+
+function createHeart() {
+
+    const heart = document.createElement("div");
+
+    heart.className = "heart";
+
+    heart.innerHTML =
+        ["💗", "💕", "💖", "✨", "🌸"]
+        [Math.floor(Math.random() * 5)];
+
+    heart.style.left = Math.random() * 100 + "vw";
+
+    heart.style.animationDuration =
+        (Math.random() * 4 + 5) + "s";
+
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 9000);
+}
+
+setInterval(createHeart, 700);
+
+</script>
+
+</body>
+</html>
+"""
+
+@app.route("/")
+def home():
+    return render_template_string(HTML)
+
+if __name__ == "__main__":
+    app.run(debug=True)
+    
